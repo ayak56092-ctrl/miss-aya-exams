@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Miss Aya Kamel English Academy | Exams</title>
+<style>
+:root{--navy:#10243b;--teal:#1c8a91;--gold:#d9bc7a;--ink:#172536;--muted:#64748b;--bg:#f4f7fb}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:linear-gradient(120deg,var(--navy),#183c58);color:white;padding:30px 18px;text-align:center;border-bottom:5px solid var(--gold)}
+header .brand{letter-spacing:2px;color:var(--gold);font-weight:bold;font-size:14px}
+header h1{margin:10px 0 8px;font-size:clamp(24px,5vw,38px)}header p{margin:0;color:#dce7f1}
+main{max-width:950px;margin:24px auto;padding:0 16px}
+.panel{background:white;border-radius:16px;padding:22px;box-shadow:0 8px 24px #10243b10;margin-bottom:18px}
+h2{margin:0 0 14px;color:var(--navy)}.grades{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.grade{border:2px solid #e4eaf0;background:#fff;border-radius:12px;padding:16px;text-align:center;cursor:pointer;font-weight:bold;color:var(--navy);transition:.15s}
+.grade:hover,.grade.active{border-color:var(--teal);background:#eaf7f7}.grade small{display:block;margin-top:7px;color:var(--muted);font-weight:normal}
+input[type=text]{width:100%;padding:12px;border:1px solid #d6deea;border-radius:9px;font-size:16px;margin:8px 0 14px}
+button{border:0;border-radius:9px;padding:12px 18px;background:var(--teal);color:white;font-weight:bold;cursor:pointer;font-size:15px}
+button.secondary{background:var(--navy)}button:disabled{opacity:.5;cursor:not-allowed}
+#examArea{display:none}.question{border:1px solid #e4eaf0;border-radius:12px;padding:16px;margin:14px 0}
+.question h3{font-size:17px;margin:0 0 12px}.option{display:flex;gap:9px;align-items:flex-start;padding:9px;border-radius:8px;cursor:pointer}.option:hover{background:#f3f8fa}.option input{margin-top:3px}
+.result{display:none;margin-top:16px;padding:18px;border-radius:12px;background:#eaf7f2;border:1px solid #b8e1d0}.result strong{font-size:24px;color:#12684b}
+footer{text-align:center;color:var(--muted);padding:24px;font-size:13px}
+@media(max-width:600px){.grades{grid-template-columns:1fr}.panel{padding:17px}header{padding:25px 12px}}
+</style>
+</head>
+<body>
+<header>
+<div class="brand">MISS AYA KAMEL</div>
+<h1>ENGLISH ACADEMY</h1>
+<p>Online Exams · Learn • Practice • Achieve</p>
+</header>
+<main>
+<section class="panel">
+<h2>Choose Your Stage</h2>
+<div class="grades">
+<button class="grade active" data-grade="Primary">Primary<small>Primary Stage</small></button>
+<button class="grade" data-grade="Middle">Middle<small>Preparatory Stage</small></button>
+<button class="grade" data-grade="Secondary">Secondary<small>Secondary Stage</small></button>
+</div>
+<label for="student">Student name (optional)</label>
+<input id="student" type="text" placeholder="Enter your name">
+<button id="start" class="secondary">Start Sample Exam</button>
+</section>
+<section id="examArea" class="panel">
+<h2 id="examTitle">Sample English Exam</h2>
+<p>Choose one answer for each question, then submit to see your score.</p>
+<div id="questions"></div>
+<button id="submit">Submit Exam</button>
+<div id="result" class="result"></div>
+</section>
+</main>
+<footer>© Miss Aya Kamel English Academy · Practice with confidence</footer>
+<script>
+const sample=[
+{q:"Choose the correct sentence:",opts:["She go to school every day.","She goes to school every day.","She going to school every day."],a:1,ex:"With he/she/it in the present simple, the verb usually takes -s or -es."},
+{q:"What is the plural of “child”?",opts:["childs","childes","children"],a:2,ex:"The plural of child is children."},
+{q:"Choose the correct word: I have lived here ___ 2020.",opts:["for","since","during"],a:1,ex:"Use since with a starting point in time."},
+{q:"Choose the opposite of “difficult”:",opts:["easy","careful","strong"],a:0,ex:"Easy is the opposite of difficult."},
+{q:"Choose the correct question:",opts:["Where you are going?","Where are you going?","Where going you? "],a:1,ex:"In this question, the verb are comes before the subject you."}
+];
+let selected="Primary";
+document.querySelectorAll(".grade").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll(".grade").forEach(b=>b.classList.remove("active"));btn.classList.add("active");selected=btn.dataset.grade;}));
+document.getElementById("start").addEventListener("click",()=>{
+ document.getElementById("examArea").style.display="block";
+ document.getElementById("examTitle").textContent=selected+" · Sample English Exam";
+ document.getElementById("result").style.display="none";
+ document.getElementById("questions").innerHTML=sample.map((item,i)=>`<div class="question"><h3>${i+1}. ${item.q}</h3>${item.opts.map((opt,j)=>`<label class="option"><input type="radio" name="q${i}" value="${j}"><span>${opt}</span></label>`).join("")}</div>`).join("");
+ document.getElementById("examArea").scrollIntoView({behavior:"smooth"});
+});
+document.getElementById("submit").addEventListener("click",()=>{
+ let score=0,details=[];
+ sample.forEach((item,i)=>{const chosen=document.querySelector(`input[name="q${i}"]:checked`);if(chosen&&Number(chosen.value)===item.a)score++;details.push(`${i+1}. ${chosen&&Number(chosen.value)===item.a?"Correct":"Incorrect"} — ${item.ex}`)});
+ const result=document.getElementById("result");
+ result.style.display="block";
+ result.innerHTML=`<strong>${score} / ${sample.length}</strong><p>${document.getElementById("student").value.trim()? "Well done, "+document.getElementById("student").value.trim()+"!":"Your exam result"}: ${score===sample.length?"Excellent!":score>=3?"Good work!":"Keep practicing!"}</p><hr><p>${details.join("<br>")}</p>`;
+ result.scrollIntoView({behavior:"smooth"});
+});
+</script>
+</body>
+</html>
